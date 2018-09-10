@@ -1,0 +1,243 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Unit Testing!</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/agate.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+    <style type="text/css">
+      code {
+        max-height:500px !important;
+      }
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+                    <h1>Practical Unit Testing</h1>
+                </section>
+				<section>
+					<h2 class="fragment">Automated Tests<br /><span style="font-style:italic;">Enable Change</span></h2>
+                </section>
+                <section>
+                    <h2>Types of Automated Tests</h2>
+                    <ul>
+                        <li class="fragment" data-fragment-index="1"><span class="fragment  highlight-green" data-fragment-index="7">Unit tests</span></li>
+                        <li class="fragment fade-in-then-semi-out" data-fragment-index="2">Integration tests</li>
+                        <li class="fragment fade-in-then-semi-out" data-fragment-index="3">Functional tests</li>
+                        <li class="fragment fade-in-then-semi-out" data-fragment-index="4">End-to-end tests</li>
+                        <li class="fragment fade-in-then-semi-out" data-fragment-index="5">Performance tests</li>
+                        <li class="fragment fade-in-then-semi-out" data-fragment-index="6">Smoke tests</li>
+                    </ul>
+                </section>
+                <section>
+					<h2>Unit Tests</h2>
+					<p class="fragment">Cheap</p>
+					<p class="fragment">Quick</p>
+					<p class="fragment">Focused</p>
+					<p class="fragment">Immediate</p>
+				</section>
+				<section>
+					<h6>Example 1 - Basic Test using xUnit</h6>
+					<pre><code data-trim>
+            public class Greeter
+            {
+              public string GreetByName(string name)
+              {
+                return $"Yo wassup {name}!";
+              }
+            }
+
+            public class GreeterTests
+            {
+              [Fact]
+              public void ShouldUseNameInGreeting()
+              {
+                var greeter = new Greeter(); //Assemble
+                var greeting = Greeter.GreetByName("Pablo"); //Act
+                Assert.Equal("Yo wassup Pablo!", greeting); //Assert
+              }
+            }
+					</code></pre>
+				</section>
+				<section>
+					<h6>Example 2 - Cover All Logic Branches</h6>
+					<pre><code data-trim>
+            public class Greeter
+            {
+              public string GreetByName(string name)
+              {
+                if (string.IsNullOrEmpty(name))
+                {
+                  return "Heeyyyyy... you!";
+                }
+
+                return $"Yo wassup {name}!";
+              }
+            }
+
+            public class GreeterTests
+            {
+              [Fact]
+              public void ShouldUseNameInGreeting() { ... }
+
+              [Fact]
+              public void ShouldUseGenericGreetingIfNoName()
+              {
+                var greeter = new Greeter();
+                var greeting = Greeter.GreetByName("");
+                Assert.Equal("Heeyyyyy... you!", greeting);
+              }
+            }
+					</code></pre>
+        </section>
+				<section>
+					<h6>Example 3 - Code Testability</h6>
+					<pre><code data-trim data-noescape>
+            public class CookieService
+            {
+              private Oven Oven { get; set; }
+              public CookieService(Oven oven)
+              {
+                Oven = oven;
+              }
+
+              public IEnumerable&lt;Cookie&gt; BakeCookies(int cookieCount)
+              {
+                return Oven.Bake&lt;Cookie&gt;(cookieCount); //returns cookies
+              }
+            }
+
+            public class CookieServiceTests
+            {
+              [Fact]
+              public void ShouldBakeCookies()
+              {
+                var cookieService = new CookieService(<span class="fragment highlight-red">new Oven()</span>);
+                var cookies = cookieService.BakeCookies(12);
+                Assert.Equal(12, cookies.Count());
+              }
+            }
+          </code></pre>
+        </section>
+        <section>
+          <h2>Mocks</h2>
+          <p class="fragment">Fake dependencies</p>
+          <p class="fragment">Made possible by decoupling</p>
+          <p class="fragment">C# - Moq</p>
+        </section>
+				<section>
+					<h6>Example 4 - Interfaces Enable Mocks</h6>
+					<pre><code data-trim data-noescape>
+            public interface IBaker
+            {
+              IEnumerable&lt;T&gt; Bake&lt;T&gt;(int itemCount);
+            }
+            public class Oven : IBaker { ... }
+            public class CookieService
+            {
+              private IBaker Baker { get; set; }
+              public CookieService(IBaker baker)
+              {
+                Baker = baker;
+              }
+
+              public IEnumerable&lt;Cookie&gt; BakeCookies(int cookieCount)
+              {
+                return Baker.Bake&lt;Cookie&gt;(cookieCount); //returns cookies
+              }
+            }
+
+            public class CookieServiceTests
+            {
+              [Fact]
+              public void ShouldBakeCookies()
+              {
+                var mockBaker = new Mock&lt;IBaker&gt;();
+                mockBaker.Setup(b => b.Bake&lt;Cookie&gt;(It.IsAny&lt;int&gt;()))
+                  .Returns(new Cookie[12]);
+                var cookieService = new CookieService(mockBaker.Object);
+
+                var cookies = cookieService.BakeCookies(12);
+                
+                Assert.Equal(12, cookies.Count());
+              }
+            }
+          </code></pre>
+        </section>
+        <section>
+          <h2>Don't Test</h2>
+          <ul>
+            <li class="fragment">.NET Framework</li>
+            <li class="fragment">MVC Controllers</li>
+            <li class="fragment">Third-party libraries</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Do Test</h2>
+          <p>All custom logic</p>
+          <p>All "services"</p>
+          <p>Any custom extensions of frameworks or third-party libraries</p>
+        </section>
+        <section>
+          <h2>Adding tests</h2>
+          <p class="fragment">Create a new project - e.g. "TT.PIMS.API.SDK.Tests"</p>
+          <p class="fragment">New code: (Practical) TDD</p>
+          <p class="fragment">Existing code: Read and document via tests</p>
+        </section>
+        <section>
+          <h2>Running tests</h2>
+          <p class="fragment">Visual Studio: Test Explorer</p>
+          <p class="fragment">Command line (.NET Core): "dotnet test"</p>
+        </section>
+        <section>
+          <h2>Writing Good Tests</h2>
+          <p>F.I.R.S.T.</p>
+          <ul>
+            <li class="fragment">Fast</li>
+            <li class="fragment">Independent</li>
+            <li class="fragment">Repeatable</li>
+            <li class="fragment">Self-Validating</li>
+            <li class="fragment">Timely</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Demo time!</h2>
+        </section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
