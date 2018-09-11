@@ -19,6 +19,8 @@ namespace UnitTestingWorkshop.Demo.UI
                 Console.WriteLine(movie.GetDescription() + Environment.NewLine);
             }
 
+            var distinctGenres = movieService.GetDistinctGenres();
+            Console.WriteLine($"{distinctGenres.Count()} distinct genres found: {string.Join(", ", distinctGenres.Select(g => g.Name).OrderBy(n => n))}");
 
             Console.WriteLine(Environment.NewLine + "Press enter to close.");
             Console.ReadLine();

@@ -27,5 +27,10 @@ namespace UnitTestingWorkshop.Demo.Services.Movies
         {
             return Movies.OrderByDescending(m => m.Popularity).Take(5);
         }
+
+        public IEnumerable<Genre> GetDistinctGenres()
+        {
+            return Movies.SelectMany(m => m.Genres).Distinct();
+        }
     }
 }
