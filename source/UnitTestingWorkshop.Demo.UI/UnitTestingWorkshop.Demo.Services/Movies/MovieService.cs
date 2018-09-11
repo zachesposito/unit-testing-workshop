@@ -13,7 +13,7 @@ namespace UnitTestingWorkshop.Demo.Services.Movies
     {
         private IEnumerable<Movie> Movies { get; set; }
 
-        public MovieService(MovieDataService movieDataService)
+        public MovieService(IMovieDataService movieDataService)
         {
             Movies = movieDataService.LoadMovies();
         }
@@ -25,7 +25,12 @@ namespace UnitTestingWorkshop.Demo.Services.Movies
 
         public IEnumerable<Movie> GetTopPopularMovies(int numberToShow)
         {
-            return Movies.OrderByDescending(m => m.Popularity).Take(5);
+            return Movies.OrderByDescending(m => m.Popularity).Take(numberToShow);
+        }
+
+        public IEnumerable<Movie> SearchTag(string search)
+        {
+            return Movies.Where(x => x.Tagline.Contains(search) || x.Title.Contains(search));
         }
     }
 }

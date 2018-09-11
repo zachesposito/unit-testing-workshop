@@ -19,7 +19,19 @@ namespace UnitTestingWorkshop.Demo.UI
                 Console.WriteLine(movie.GetDescription() + Environment.NewLine);
             }
 
+            Console.WriteLine("*********************");
+            Console.WriteLine("Type in search critera:");
+            string search = Console.ReadLine();
 
+            Console.WriteLine("*********************");
+            Console.WriteLine("SEARCH RESULTS (MAX - 5 MOVIES)");
+            Console.WriteLine("*********************");
+            foreach (var movie in movieService.SearchTag(search).Take(5))
+            {
+                Console.WriteLine(movie.GetDescription() + Environment.NewLine);
+            }
+
+            Console.WriteLine("*********************");
             Console.WriteLine(Environment.NewLine + "Press enter to close.");
             Console.ReadLine();
         }
