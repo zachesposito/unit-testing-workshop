@@ -23,9 +23,9 @@ namespace UnitTestingWorkshop.Demo.Services.Movies
             return Movies;
         }
 
-        public IEnumerable<Genre> GetGenres()
+        public IEnumerable<Movie> GetTopPopularMovies(int numberToShow)
         {
-            return Movies.SelectMany(m => m.Genres).Distinct();
+            return Movies.OrderByDescending(m => m.Popularity).Take(5);
         }
     }
 }
