@@ -8,7 +8,7 @@ namespace UnitTestingWorkshop.Demo.UI
     {
         static void Main(string[] args)
         {
-            var movieDataService = new MovieDataService();
+            var movieDataService = new CSVMovieDataService();
             var movieService = new MovieService(movieDataService);
 
             Console.WriteLine($"Welcome to the Movie Service, we have { movieService.GetMovies().Count() } movies");

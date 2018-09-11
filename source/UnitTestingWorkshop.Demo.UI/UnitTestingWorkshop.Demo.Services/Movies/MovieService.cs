@@ -13,7 +13,7 @@ namespace UnitTestingWorkshop.Demo.Services.Movies
     {
         private IEnumerable<Movie> Movies { get; set; }
 
-        public MovieService(MovieDataService movieDataService)
+        public MovieService(IMovieDataService movieDataService)
         {
             Movies = movieDataService.LoadMovies();
         }

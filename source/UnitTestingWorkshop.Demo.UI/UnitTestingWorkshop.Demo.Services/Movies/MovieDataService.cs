@@ -11,7 +11,7 @@ namespace UnitTestingWorkshop.Demo.Services.Movies
     /// <summary>
     /// Provides movie data from CSV files
     /// </summary>
-    public class MovieDataService
+    public class CSVMovieDataService : IMovieDataService
     {
         public IEnumerable<Movie> LoadMovies()
         {
