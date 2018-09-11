@@ -25,7 +25,7 @@ namespace UnitTestingWorkshop.Demo.Services.Movies
 
         public IEnumerable<Movie> GetTopPopularMovies(int numberToShow)
         {
-            return Movies.OrderByDescending(m => m.Popularity).Take(5);
+            return Movies.OrderByDescending(m => m.Popularity).Take(numberToShow);
         }
 
         public IEnumerable<Genre> GetDistinctGenres()
